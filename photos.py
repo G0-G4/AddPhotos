@@ -17,6 +17,7 @@ DIR = 'thisisarandomname4r8r4u83rhuwrgniwrghirwhuwrg'
 def add(image_name, cell, of, ws, size, quality):
     global H, W, i
     img = pilim.open(image_name)
+    img = img.convert('RGB')
     img.save(f'{DIR}/img{i}.jpg', quality = quality)
     img = Image(f'{DIR}/img{i}.jpg')
     k = img.height / size
