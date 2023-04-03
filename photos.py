@@ -5,9 +5,11 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
 from openpyxl.drawing.image import Image
 from PIL import Image as pilim
+from PIL import ImageFile
 import time
 import traceback
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 H = 0.75
 W = 0.143
@@ -16,19 +18,22 @@ DIR = 'thisisarandomname4r8r4u83rhuwrgniwrghirwhuwrg'
 
 def add(image_name, cell, of, ws, size, quality):
     global H, W, i
-    img = pilim.open(image_name)
-    img = img.convert('RGB')
-    img.save(f'{DIR}/img{i}.jpg', quality = quality)
-    img = Image(f'{DIR}/img{i}.jpg')
-    k = img.height / size
-    img.height = size
-    img.width /= k
-    anchor = cell.offset(0, of)
+    try:
+        img = pilim.open(image_name)
+        img = img.convert('RGB')
+        img.save(f'{DIR}/img{i}.jpg', quality = quality)
+        img = Image(f'{DIR}/img{i}.jpg')
+        k = img.height / size
+        img.height = size
+        img.width /= k
+        anchor = cell.offset(0, of)
 
-    ws.row_dimensions[anchor.row].height = img.height * H
-    ws.column_dimensions[get_column_letter(anchor.column)].width = img.width * W
-    ws.add_image(img, anchor.coordinate)
-    i += 1
+        ws.row_dimensions[anchor.row].height = img.height * H
+        ws.column_dimensions[get_column_letter(anchor.column)].width = img.width * W
+        ws.add_image(img, anchor.coordinate)
+        i += 1
+    except Exception:
+        traceback.print_exc()
 
 def check_image(file):
     return (file.endswith('png')  or
@@ -146,7 +151,7 @@ while True:
             shutil.rmtree(DIR)
         except Exception as e:
             sg.popup(e)
-            print(traceback.print_exc())
+            traceback.print_exc()
 
 
 window.close()
